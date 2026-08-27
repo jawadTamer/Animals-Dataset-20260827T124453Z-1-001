@@ -2,7 +2,9 @@
 
 ## Overview
 
-This model predicts heat-stress risk levels for livestock based on environmental conditions and animal characteristics. It is designed as a decision-support system for agricultural operations to help farmers proactively manage heat stress in their animals.
+**IMPORTANT:** This is a **PROTOTYPE/DEMO** model trained on **SYNTHETIC/DERIVED** risk labels. The target (risk_level) is derived from THI (Temperature-Humidity Index) thresholds based on peer-reviewed scientific literature, not from observed ground truth outcomes. The model learns to approximate the THI-based labeling rule.
+
+This model provides heat-stress risk level predictions for livestock based on environmental conditions and animal characteristics. It is designed as a decision-support system for agricultural operations to help farmers proactively manage heat stress in their animals.
 
 **Risk Levels:**
 - **Low**: Minimal heat stress risk
@@ -10,12 +12,14 @@ This model predicts heat-stress risk levels for livestock based on environmental
 - **High**: High heat stress risk
 - **Critical**: Severe heat stress risk
 
+**DISCLAIMER:** This is a decision-support system, not a veterinary diagnostic system. Predictions should be used alongside professional veterinary judgment. Do not use for unsupported species or without validation on real farm data.
+
 ---
 
 ## Dataset Information
 
 ### Source
-**Synthetic dataset** created for FarmGuard demonstration purposes.
+**Synthetic dataset** created for FarmGuard demonstration/hackathon purposes.
 
 ### Dataset Size
 - **Total samples**: 10,000
@@ -72,8 +76,12 @@ This model predicts heat-stress risk levels for livestock based on environmental
 ### Target Variable
 - `risk_level`: Heat-stress risk level (Low, Moderate, High, Critical)
 
-### Target Definition
-Risk levels are derived from THI (Temperature-Humidity Index) with species-specific thresholds:
+### Target Definition (CRITICAL)
+**Risk levels are SYNTHETIC/DERIVED from THI (Temperature-Humidity Index) thresholds.** This is NOT observed ground truth. The model is learning to approximate a deterministic rule, not predict real-world outcomes.
+
+THI calculation: `THI = (1.8 * T + 32) - ((0.55 - 0.0055 * RH) * (1.8 * T - 26))`
+
+Species-specific thresholds:
 
 **Cattle:**
 - Low: THI < 72
@@ -94,7 +102,7 @@ Risk levels are derived from THI (Temperature-Humidity Index) with species-speci
 - Critical: THI ≥ 86
 
 ### Labeling Methodology
-Labels are **synthetic/derived** based on scientifically established THI thresholds for different livestock species. These labels are not observed ground truth but are derived from environmental measurements using peer-reviewed heat-stress thresholds.
+Labels are **synthetic/derived** based on scientifically established THI thresholds for different livestock species from peer-reviewed literature. These labels are NOT observed ground truth but are derived from environmental measurements. The model is essentially learning to approximate the THI-based classification rule with some added noise (10% random perturbation during generation).
 
 ---
 
@@ -137,6 +145,8 @@ Group-aware splitting ensures that all measurements from the same animal are con
 ---
 
 ## Model Performance
+
+**IMPORTANT:** These metrics are on synthetic/derived data and do NOT represent real-world performance. The model is learning to approximate a deterministic THI-based rule.
 
 ### Overall Metrics
 - **Accuracy**: 88.05%
@@ -211,7 +221,22 @@ Group-aware splitting ensures that all measurements from the same animal are con
 
 ## Known Limitations
 
-### 1. Synthetic Data
+### 1. Synthetic/Derived Target (CRITICAL)
+**Limitation**: The target (risk_level) is SYNTHETICALLY DERIVED from THI thresholds, not observed ground truth.
+
+**Impact**: 
+- The model is learning to approximate a deterministic rule (THI-based classification)
+- Performance metrics do NOT represent real-world predictive capability
+- This is rule-learning, not outcome prediction
+- Correlation between THI and risk_level is 0.80 (highly deterministic)
+
+**Mitigation**: 
+- Clearly communicate this as a prototype/demo model
+- Do NOT claim "88% real-world heat-stress prediction accuracy"
+- Use scientifically honest wording: "Prototype risk classifier trained on synthetic/derived labels"
+- Validate on real farm data before any production use
+
+### 2. Synthetic Data
 **Limitation**: The dataset is synthetic, not real-world observational data.
 
 **Impact**: 

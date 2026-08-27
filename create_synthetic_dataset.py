@@ -173,9 +173,9 @@ for _ in range(n_samples):
 df = pd.DataFrame(data)
 
 # Save datasets
-animals_df.to_csv('c:/Users/jawad/Downloads/Animals Dataset-20260827T124453Z-1-001/farmguard_animals_metadata.csv', index=False)
-farms_df.to_csv('c:/Users/jawad/Downloads/Animals Dataset-20260827T124453Z-1-001/farmguard_farms.csv', index=False)
-df.to_csv('c:/Users/jawad/Downloads/Animals Dataset-20260827T124453Z-1-001/farmguard_animal_heat_risk.csv', index=False)
+animals_df.to_csv('farmguard_animals_metadata.csv', index=False)
+farms_df.to_csv('farmguard_farms.csv', index=False)
+df.to_csv('farmguard_animal_heat_risk.csv', index=False)
 
 print("\nDataset created successfully!")
 print(f"\nTotal samples: {len(df)}")

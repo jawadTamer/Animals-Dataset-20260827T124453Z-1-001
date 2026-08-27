@@ -13,7 +13,7 @@ print("FARMGUARD ANIMAL HEAT-RISK PREDICTION MODEL")
 print("=" * 80)
 
 # Load dataset
-df = pd.read_csv('c:/Users/jawad/Downloads/Animals Dataset-20260827T124453Z-1-001/farmguard_animal_heat_risk.csv')
+df = pd.read_csv('farmguard_animal_heat_risk.csv')
 
 print(f"\nDataset shape: {df.shape}")
 print(f"Columns: {df.columns.tolist()}")
@@ -175,11 +175,11 @@ print("STEP 7: SAVE MODEL ARTIFACTS")
 print("=" * 80)
 
 # Save model and preprocessing objects
-joblib.dump(rf_model, 'c:/Users/jawad/Downloads/Animals Dataset-20260827T124453Z-1-001/animal_heat_risk_model.pkl')
-joblib.dump(scaler, 'c:/Users/jawad/Downloads/Animals Dataset-20260827T124453Z-1-001/feature_scaler.pkl')
-joblib.dump(label_encoders, 'c:/Users/jawad/Downloads/Animals Dataset-20260827T124453Z-1-001/label_encoders.pkl')
-joblib.dump(target_encoder, 'c:/Users/jawad/Downloads/Animals Dataset-20260827T124453Z-1-001/target_encoder.pkl')
-joblib.dump(feature_cols, 'c:/Users/jawad/Downloads/Animals Dataset-20260827T124453Z-1-001/feature_columns.pkl')
+joblib.dump(rf_model, 'animal_heat_risk_model.pkl')
+joblib.dump(scaler, 'feature_scaler.pkl')
+joblib.dump(label_encoders, 'label_encoders.pkl')
+joblib.dump(target_encoder, 'target_encoder.pkl')
+joblib.dump(feature_cols, 'feature_columns.pkl')
 
 print("\nModel artifacts saved:")
 print("  - animal_heat_risk_model.pkl")

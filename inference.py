@@ -9,14 +9,19 @@ class AnimalHeatRiskPredictor:
     """
     FarmGuard Animal Heat-Risk Prediction Model
     
-    This model predicts heat-stress risk levels for livestock based on
-    environmental conditions and animal characteristics.
+    This is a PROTOTYPE/DEMO model trained on synthetic/derived risk labels.
+    The target (risk_level) is derived from THI (Temperature-Humidity Index) thresholds,
+    not observed ground truth. The model learns to approximate the THI-based labeling rule.
+    
+    Supported species: cattle, sheep, goats only.
     
     Risk Levels:
     - Low: Minimal heat stress risk
     - Moderate: Moderate heat stress risk
     - High: High heat stress risk
     - Critical: Severe heat stress risk
+    
+    IMPORTANT: This is a decision-support system, not a veterinary diagnostic system.
     """
     
     def __init__(self, model_path='animal_heat_risk_model.pkl',
@@ -26,6 +31,13 @@ class AnimalHeatRiskPredictor:
                  feature_columns_path='feature_columns.pkl'):
         """
         Load the trained model and preprocessing objects.
+        
+        Args:
+            model_path: Path to trained model file
+            scaler_path: Path to feature scaler file
+            label_encoders_path: Path to label encoders file
+            target_encoder_path: Path to target encoder file
+            feature_columns_path: Path to feature columns file
         """
         self.model = joblib.load(model_path)
         self.scaler = joblib.load(scaler_path)
@@ -40,6 +52,44 @@ class AnimalHeatRiskPredictor:
                                      'elevation_m', 'temperature_c', 'humidity_percent', 
                                      'wind_speed_m_s', 'solar_radiation_w_m2', 
                                      'day_of_year', 'month']
+        
+        # Supported species
+        self.supported_species = ['cattle', 'sheep', 'goat']
+        
+        # Required fields for prediction
+        self.required_fields = ['species', 'breed', 'age_years', 'weight_kg', 'sex',
+                               'physiological_stage', 'health_status', 'latitude',
+                               'longitude', 'elevation_m', 'climate_zone',
+                               'temperature_c', 'humidity_percent', 'wind_speed_m_s',
+                               'solar_radiation_w_m2']
+    
+    def validate_input(self, input_data):
+        """
+        Validate input data.
+        
+        Args:
+            input_data: Dictionary containing input features
+            
+        Raises:
+            ValueError: If validation fails
+        """
+        # Check species support
+        if 'species' in input_data:
+            if input_data['species'].lower() not in self.supported_species:
+                raise ValueError(
+                    f"Unsupported species '{input_data['species']}'. "
+                    f"Supported species: {self.supported_species}"
+                )
+        
+        # Check required fields
+        missing_fields = [f for f in self.required_fields if f not in input_data]
+        if missing_fields:
+            raise ValueError(f"Missing required fields: {missing_fields}")
+        
+        # Check for None values in required fields
+        null_fields = [f for f in self.required_fields if input_data.get(f) is None]
+        if null_fields:
+            raise ValueError(f"Null values in required fields: {null_fields}")
     
     def preprocess_input(self, input_data):
         """
@@ -104,11 +154,18 @@ class AnimalHeatRiskPredictor:
         Predict heat-stress risk level.
         
         Args:
-            input_data: Dictionary or DataFrame containing input features
+            input_data: Dictionary containing input features
             
         Returns:
             Dictionary with prediction results
+            
+        Raises:
+            ValueError: If input validation fails
         """
+        # Validate input
+        if isinstance(input_data, dict):
+            self.validate_input(input_data)
+        
         # Preprocess
         X = self.preprocess_input(input_data)
         
@@ -128,11 +185,16 @@ class AnimalHeatRiskPredictor:
         # Calculate confidence (max probability)
         confidence = float(max(prediction_proba))
         
+        # Calculate meaningful risk_score from probabilities
+        # risk_score = weighted average where Low=0, Moderate=33.3, High=66.7, Critical=100
+        risk_weights = {class_name: i * 33.33 for i, class_name in enumerate(self.target_encoder.classes_)}
+        risk_score = sum(prob * risk_weights[class_name] for class_name, prob in prob_dict.items())
+        
         return {
             'risk_level': risk_level,
-            'risk_score': float(prediction_encoded),
-            'confidence': confidence,
-            'probabilities': prob_dict
+            'risk_score': round(risk_score, 2),
+            'confidence': round(confidence, 4),
+            'probabilities': {k: round(v, 4) for k, v in prob_dict.items()}
         }
     
     def predict_batch(self, input_data):
@@ -169,13 +231,13 @@ class AnimalHeatRiskPredictor:
 
 # Example usage
 if __name__ == "__main__":
-    # Initialize predictor
+    # Initialize predictor with relative paths
     predictor = AnimalHeatRiskPredictor(
-        model_path='c:/Users/jawad/Downloads/Animals Dataset-20260827T124453Z-1-001/animal_heat_risk_model.pkl',
-        scaler_path='c:/Users/jawad/Downloads/Animals Dataset-20260827T124453Z-1-001/feature_scaler.pkl',
-        label_encoders_path='c:/Users/jawad/Downloads/Animals Dataset-20260827T124453Z-1-001/label_encoders.pkl',
-        target_encoder_path='c:/Users/jawad/Downloads/Animals Dataset-20260827T124453Z-1-001/target_encoder.pkl',
-        feature_columns_path='c:/Users/jawad/Downloads/Animals Dataset-20260827T124453Z-1-001/feature_columns.pkl'
+        model_path='animal_heat_risk_model.pkl',
+        scaler_path='feature_scaler.pkl',
+        label_encoders_path='label_encoders.pkl',
+        target_encoder_path='target_encoder.pkl',
+        feature_columns_path='feature_columns.pkl'
     )
     
     # Example single prediction
