@@ -1,0 +1,9 @@
+Manifest file for edi.1406.1.zip created on Thu Aug 27 13:18:48 UTC 2026
+temperature_degree.csv (7936 bytes)
+relative_humidity.csv (7859 bytes)
+sensor_data.txt (14646237 bytes)
+milk_yield.txt (2880099 bytes)
+health_events.txt (963305 bytes)
+edi.1406.1.xml (34162 bytes)
+edi.1406.1.txt (15113 bytes)
+edi.1406.1.report.xml (113596 bytes)
