@@ -1,5 +1,26 @@
 # FarmGuard Integration - Model Input Mapping
 
+## Architecture Decision
+
+**IMPORTANT:** The Python ML model (scikit-learn/joblib) cannot run directly in Angular or Supabase Edge Functions (which use JavaScript/TypeScript).
+
+**Recommended Architecture for Hackathon:**
+```
+Angular Frontend
+    ↓ HTTP API
+Supabase Edge Function (TypeScript) OR Separate Python Backend
+    ↓
+Python Inference Service (FastAPI/Flask)
+    ↓
+Model Prediction (scikit-learn)
+    ↓
+JSON Response
+    ↓
+Angular UI
+```
+
+For the hackathon, the model should remain a separate Python inference service. The model artifacts and inference code are kept in this repository for integration.
+
 ## FarmGuard Database Schema (Current)
 
 Based on the FarmGuard Supabase database, the livestock information contains:

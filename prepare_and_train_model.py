@@ -13,7 +13,7 @@ print("FARMGUARD ANIMAL HEAT-RISK PREDICTION MODEL")
 print("=" * 80)
 
 # Load dataset
-df = pd.read_csv('farmguard_animal_heat_risk.csv')
+df = pd.read_csv('data/farmguard_animal_heat_risk.csv')
 
 print(f"\nDataset shape: {df.shape}")
 print(f"Columns: {df.columns.tolist()}")
@@ -175,18 +175,18 @@ print("STEP 7: SAVE MODEL ARTIFACTS")
 print("=" * 80)
 
 # Save model and preprocessing objects
-joblib.dump(rf_model, 'animal_heat_risk_model.pkl')
-joblib.dump(scaler, 'feature_scaler.pkl')
-joblib.dump(label_encoders, 'label_encoders.pkl')
-joblib.dump(target_encoder, 'target_encoder.pkl')
-joblib.dump(feature_cols, 'feature_columns.pkl')
+joblib.dump(rf_model, 'model/animal_heat_risk_model.pkl')
+joblib.dump(scaler, 'model/feature_scaler.pkl')
+joblib.dump(label_encoders, 'model/label_encoders.pkl')
+joblib.dump(target_encoder, 'model/target_encoder.pkl')
+joblib.dump(feature_cols, 'model/feature_columns.pkl')
 
 print("\nModel artifacts saved:")
-print("  - animal_heat_risk_model.pkl")
-print("  - feature_scaler.pkl")
-print("  - label_encoders.pkl")
-print("  - target_encoder.pkl")
-print("  - feature_columns.pkl")
+print("  - model/animal_heat_risk_model.pkl")
+print("  - model/feature_scaler.pkl")
+print("  - model/label_encoders.pkl")
+print("  - model/target_encoder.pkl")
+print("  - model/feature_columns.pkl")
 
 print("\n" + "=" * 80)
 print("TRAINING COMPLETE")
