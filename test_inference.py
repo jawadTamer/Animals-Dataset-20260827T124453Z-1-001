@@ -5,6 +5,15 @@ import sys
 import pandas as pd
 from inference import AnimalHeatRiskPredictor
 
+# Override default paths for test suite
+AnimalHeatRiskPredictor.__init__.__defaults__ = (
+    'model/animal_heat_risk_model.pkl',
+    'model/feature_scaler.pkl',
+    'model/label_encoders.pkl',
+    'model/target_encoder.pkl',
+    'model/feature_columns.pkl'
+)
+
 def test_valid_cattle():
     """Test valid cattle input"""
     predictor = AnimalHeatRiskPredictor()
@@ -276,6 +285,135 @@ def test_output_schema():
     
     print("✓ Test output schema: PASSED")
 
+def test_with_date_field():
+    """Test prediction with date field"""
+    predictor = AnimalHeatRiskPredictor()
+    input_data = {
+        'species': 'cattle',
+        'breed': 'Holstein',
+        'age_years': 4.5,
+        'weight_kg': 600,
+        'sex': 'female',
+        'physiological_stage': 'lactating',
+        'health_status': 'healthy',
+        'latitude': 40.5,
+        'longitude': -3.7,
+        'elevation_m': 200,
+        'climate_zone': 'Mediterranean',
+        'temperature_c': 35.0,
+        'humidity_percent': 70,
+        'wind_speed_m_s': 2.5,
+        'solar_radiation_w_m2': 400,
+        'date': '2023-07-15'
+    }
+    result = predictor.predict(input_data)
+    assert result['risk_level'] in ['Low', 'Moderate', 'High', 'Critical']
+    print("✓ Test with date field: PASSED")
+
+def test_null_value_in_required_field():
+    """Test null value in required field"""
+    predictor = AnimalHeatRiskPredictor()
+    input_data = {
+        'species': 'cattle',
+        'breed': 'Holstein',
+        'age_years': 4.5,
+        'weight_kg': 600,
+        'sex': 'female',
+        'physiological_stage': 'lactating',
+        'health_status': 'healthy',
+        'latitude': 40.5,
+        'longitude': -3.7,
+        'elevation_m': 200,
+        'climate_zone': 'Mediterranean',
+        'temperature_c': None,  # Null value
+        'humidity_percent': 70,
+        'wind_speed_m_s': 2.5,
+        'solar_radiation_w_m2': 400
+    }
+    try:
+        result = predictor.predict(input_data)
+        print("✗ Test null value in required field: FAILED (should raise ValueError)")
+        sys.exit(1)
+    except ValueError as e:
+        assert 'Null values in required fields' in str(e)
+        print("✓ Test null value in required field: PASSED")
+
+def test_unknown_breed():
+    """Test unknown breed (should handle gracefully with -1 encoding)"""
+    predictor = AnimalHeatRiskPredictor()
+    input_data = {
+        'species': 'cattle',
+        'breed': 'UnknownBreed',  # Not in training data
+        'age_years': 4.5,
+        'weight_kg': 600,
+        'sex': 'female',
+        'physiological_stage': 'lactating',
+        'health_status': 'healthy',
+        'latitude': 40.5,
+        'longitude': -3.7,
+        'elevation_m': 200,
+        'climate_zone': 'Mediterranean',
+        'temperature_c': 35.0,
+        'humidity_percent': 70,
+        'wind_speed_m_s': 2.5,
+        'solar_radiation_w_m2': 400
+    }
+    result = predictor.predict(input_data)
+    # Should still return a prediction (breed encoded as -1)
+    assert result['risk_level'] in ['Low', 'Moderate', 'High', 'Critical']
+    print("✓ Test unknown breed: PASSED")
+
+def test_extreme_cold():
+    """Test extreme cold conditions"""
+    predictor = AnimalHeatRiskPredictor()
+    input_data = {
+        'species': 'cattle',
+        'breed': 'Holstein',
+        'age_years': 4.5,
+        'weight_kg': 600,
+        'sex': 'female',
+        'physiological_stage': 'lactating',
+        'health_status': 'healthy',
+        'latitude': 40.5,
+        'longitude': -3.7,
+        'elevation_m': 200,
+        'climate_zone': 'Mediterranean',
+        'temperature_c': -10.0,
+        'humidity_percent': 30,
+        'wind_speed_m_s': 10.0,
+        'solar_radiation_w_m2': 50
+    }
+    result = predictor.predict(input_data)
+    # Extreme cold should result in Low risk
+    assert result['risk_level'] == 'Low'
+    print("✓ Test extreme cold: PASSED")
+
+def test_different_physiological_stages():
+    """Test different physiological stages"""
+    predictor = AnimalHeatRiskPredictor()
+    stages = ['lactating', 'dry', 'pregnant', 'growing']
+    for stage in stages:
+        input_data = {
+            'species': 'cattle',
+            'breed': 'Holstein',
+            'age_years': 4.5,
+            'weight_kg': 600,
+            'sex': 'female',
+            'physiological_stage': stage,
+            'health_status': 'healthy',
+            'latitude': 40.5,
+            'longitude': -3.7,
+            'elevation_m': 200,
+            'climate_zone': 'Mediterranean',
+            'temperature_c': 35.0,
+            'humidity_percent': 70,
+            'wind_speed_m_s': 2.5,
+            'solar_radiation_w_m2': 400
+        }
+        result = predictor.predict(input_data)
+        assert result['risk_level'] in ['Low', 'Moderate', 'High', 'Critical']
+    print("✓ Test different physiological stages: PASSED")
+
 if __name__ == "__main__":
     print("=" * 80)
     print("FARMGUARD ANIMAL HEAT-RISK MODEL - TEST SUITE")
@@ -292,10 +430,15 @@ if __name__ == "__main__":
         test_normal_weather()
         test_batch_prediction()
         test_output_schema()
+        test_with_date_field()
+        test_null_value_in_required_field()
+        test_unknown_breed()
+        test_extreme_cold()
+        test_different_physiological_stages()
         
         print()
         print("=" * 80)
-        print("ALL TESTS PASSED")
+        print("ALL TESTS PASSED (14 tests)")
         print("=" * 80)
     except Exception as e:
         print()

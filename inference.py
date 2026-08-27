@@ -24,11 +24,11 @@ class AnimalHeatRiskPredictor:
     IMPORTANT: This is a decision-support system, not a veterinary diagnostic system.
     """
     
-    def __init__(self, model_path='animal_heat_risk_model.pkl',
-                 scaler_path='feature_scaler.pkl',
-                 label_encoders_path='label_encoders.pkl',
-                 target_encoder_path='target_encoder.pkl',
-                 feature_columns_path='feature_columns.pkl'):
+    def __init__(self, model_path='model/animal_heat_risk_model.pkl',
+                 scaler_path='model/feature_scaler.pkl',
+                 label_encoders_path='model/label_encoders.pkl',
+                 target_encoder_path='model/target_encoder.pkl',
+                 feature_columns_path='model/feature_columns.pkl'):
         """
         Load the trained model and preprocessing objects.
         
@@ -233,11 +233,11 @@ class AnimalHeatRiskPredictor:
 if __name__ == "__main__":
     # Initialize predictor with relative paths
     predictor = AnimalHeatRiskPredictor(
-        model_path='animal_heat_risk_model.pkl',
-        scaler_path='feature_scaler.pkl',
-        label_encoders_path='label_encoders.pkl',
-        target_encoder_path='target_encoder.pkl',
-        feature_columns_path='feature_columns.pkl'
+        model_path='model/animal_heat_risk_model.pkl',
+        scaler_path='model/feature_scaler.pkl',
+        label_encoders_path='model/label_encoders.pkl',
+        target_encoder_path='model/target_encoder.pkl',
+        feature_columns_path='model/feature_columns.pkl'
     )
     
     # Example single prediction

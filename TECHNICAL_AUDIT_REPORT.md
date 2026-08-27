@@ -287,6 +287,8 @@ No new dataset required for hackathon. For production, collect real-world observ
 - Removed temporary audit and analysis scripts
 - Removed duplicate directories
 - Removed Python cache
+- Reorganized into model/ and data/ directories for clean structure
+- Updated all paths to use new directory structure
 
 ### 4. Documentation
 - **README.md:** Updated to clearly state synthetic/derived nature
@@ -297,8 +299,8 @@ No new dataset required for hackathon. For production, collect real-world observ
 
 ### 5. Testing
 - Created comprehensive test suite (test_inference.py)
-- All 9 tests passing
-- Tests cover: valid inputs, missing fields, unsupported species, extreme conditions, batch prediction, output schema
+- All 14 tests passing
+- Tests cover: valid inputs (cattle, sheep, goat), missing fields, unsupported species, extreme heat/cold, null values, unknown breeds, different physiological stages, batch prediction, output schema, date field handling
 
 ---
 
@@ -373,19 +375,22 @@ Animals-Dataset-20260827T124453Z-1-001/
 ├── README.md                          # Main documentation
 ├── MODEL_CONTRACT.md                  # API specification
 ├── FARMGUARD_INTEGRATION.md           # Integration guidance
+├── TECHNICAL_AUDIT_REPORT.md          # This audit report
 ├── requirements.txt                   # Dependencies
 ├── inference.py                       # Inference pipeline
 ├── test_inference.py                  # Test suite
 ├── create_synthetic_dataset.py       # Dataset generation
 ├── prepare_and_train_model.py        # Training pipeline
-├── animal_heat_risk_model.pkl         # Trained model
-├── feature_scaler.pkl                 # Feature scaler
-├── label_encoders.pkl                 # Categorical encoders
-├── target_encoder.pkl                 # Target encoder
-├── feature_columns.pkl                # Feature columns
-├── farmguard_animal_heat_risk.csv     # Main dataset
-├── farmguard_animals_metadata.csv     # Animal metadata
-└── farmguard_farms.csv                # Farm information
+├── model/                             # Model artifacts directory
+│   ├── animal_heat_risk_model.pkl     # Trained model (16.64 MB)
+│   ├── feature_scaler.pkl             # Feature scaler
+│   ├── label_encoders.pkl             # Categorical encoders
+│   ├── target_encoder.pkl             # Target encoder
+│   └── feature_columns.pkl            # Feature columns
+└── data/                              # Dataset directory
+    ├── farmguard_animal_heat_risk.csv # Main dataset (2.02 MB)
+    ├── farmguard_animals_metadata.csv # Animal metadata (86 KB)
+    └── farmguard_farms.csv            # Farm information (829 B)
 ```
 
 ---
